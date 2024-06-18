@@ -1,0 +1,277 @@
+# mihomo (Clash Meta) 懒人配置
+# 版本 V1.4.1-231211
+# https://gist.github.com/liuran001/5ca84f7def53c70b554d3f765ff86a33
+# 作者: 笨蛋ovo (bdovo.cc)
+# 📲 电报消息: https://t.me/baka_not_baka
+# 关注我的 📲 电报消息 频道谢谢喵 https://t.me/s/BDovo_Channel
+# 修改自官方示例规则 https://wiki.metacubex.one/example/#meta
+# 转载请保留此注释
+# 尽量添加了较为详尽的注释，不理解的地方建议对照 虚空终端 (Clash Meta) Docs 进行理解
+# 虚空终端 (Clash Meta) Docs 地址: https://wiki.metacubex.one
+
+########### 分组 ############
+############################
+pr:
+  &pr {
+    type: select,
+    proxies:
+      [
+        🎃 节点选择,
+        DIRECT,
+      ],
+  }
+
+use: &use
+  type: select
+  proxies:
+    [
+      🚀 守候高级,
+      🚀 守候网络,
+      🏂 iKuuu,
+      DIRECT,
+    ]
+
+use1: &use1
+  type: select
+  use:
+    - 🚀 守候高级
+    - 🚀 守候网络
+    - 🏂 iKuuu
+
+use2: &use2
+  type: select
+  use:
+    - 🚀 守候高级
+
+use3: &use3
+  type: select
+  use:
+    - 🚀 守候网络
+
+use4: &use4
+  type: select
+  use:
+    - 🏂 iKuuu
+
+###### 延迟检测 URL##########
+############################
+p:
+  &p {
+    type: http,
+    interval: 3600,
+    health-check:
+      {
+        enable: true,
+        url: https://www.gstatic.com/generate_204,
+        interval: 300,
+      },
+  }
+
+########### 订阅链接 ##########
+############################
+# 对于订阅来说，path 为选填项，但建议启用
+# 本地配置可以只填 path
+proxy-providers:
+  🚀 守候网络:
+    <<: *p
+    path: ./proxy_provider/🚀 守候网络.yaml
+    url: "https://subcc.sntp.uk/api/v1/client/subscribe?token=b8434da6703011219c55addfe428862a"
+  🏂 iKuuu:
+    <<: *p
+    path: ./proxy_provider/ikuuu.yaml
+    url: "https://uy2lc.no-mad-world.club/link/n4Na1fEYthTPmRkS?clash=3&extend=1"
+
+  🚀 守候高级:
+    <<: *p
+    path: ./proxy_provider/一元机场.yaml
+    url: "https://subcc.sntp.uk/api/v1/client/subscribe?token=1f3b666f5e48a5cc219eb86df3e44500"
+
+
+########### 规则模式 ##########
+############################
+mode: rule
+# ipv6 支持
+ipv6: true
+log-level: info
+# 允许局域网连接
+allow-lan: true
+# socks5/http 端口
+mixed-port: 7890
+# Meta 内核特性 https://wiki.metacubex.one/config/general
+# 统一延迟
+# 更换延迟计算方式,去除握手等额外延迟
+unified-delay: true
+# TCP 并发
+# 同时对所有ip进行连接，返回延迟最低的地址
+tcp-concurrent: true
+# 外部控制端口
+external-controller: :9090
+
+geodata-mode: true
+
+# Geo 数据库下载地址
+# 使用 FastGit 代理 (https://fgit.cf)
+# 源地址 https://github.com/MetaCubeX/meta-rules-dat
+# 可以更换镜像站但不要更换其他数据库，可能导致无法启动
+geox-url:
+  geoip: "https://hub.gitmirror.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
+  geosite: "https://hub.gitmirror.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://hub.gitmirror.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+
+# 进程匹配模式
+# 路由器上请设置为 off
+# always 开启，强制匹配所有进程
+# strict 默认，由 Clash 判断是否开启
+# off 不匹配进程，推荐在路由器上使用此模式
+find-process-mode: strict
+
+# 缓解移动设备耗电问题
+# https://github.com/vernesong/OpenClash/issues/2614
+keep-alive-interval: 1800
+
+# 全局客户端指纹
+global-client-fingerprint: random # 随机指纹
+
+# 缓存
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# 自动同步时间以防止时间不准导致无法正常联网
+ntp:
+  enable: true
+  # 是否同步至系统时间，需要 root/管理员权限
+  write-to-system: false
+  server: time.apple.com
+  port: 123
+  interval: 30
+
+# 域名嗅探
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+
+######### tun模式 ###########
+############################
+tun:
+  enable: false  # enable 'true'
+  stack: system  # or 'gvisor'
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  auto-route: true
+  auto-detect-interface: true
+
+########### DNS ############
+############################
+# 已配置 ipv6
+dns:
+    enable: true
+    ipv6: true
+    listen: '0.0.0.0:1053'
+    use-hosts: true
+    default-nameserver: [119.29.29.29, 8.8.8.8, 1.1.1.1]
+    nameserver: [223.5.5.5, 119.29.29.29]
+    fake-ip-range: 198.18.0.1/16
+    fake-ip-filter: ['*.lan', '*.localdomain', '*.example', '*.invalid', '*.localhost', '*.test', '*.local', '*.home.arpa', 'time.*.com', 'time.*.gov', 'time.*.edu.cn', 'time.*.apple.com', 'time1.*.com', 'time2.*.com', 'time3.*.com', 'time4.*.com', 'time5.*.com', 'time6.*.com', 'time7.*.com', 'ntp.*.com', 'ntp1.*.com', 'ntp2.*.com', 'ntp3.*.com', 'ntp4.*.com', 'ntp5.*.com', 'ntp6.*.com', 'ntp7.*.com', '*.time.edu.cn', '*.ntp.org.cn', +.pool.ntp.org, time1.cloud.tencent.com, 'stun.*.*', 'stun.*.*.*', swscan.apple.com, mesu.apple.com, music.163.com, '*.music.163.com', '*.126.net', musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, '*.kuwo.cn', api-jooxtt.sanook.com, api.joox.com, y.qq.com, '*.y.qq.com', streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, localhost.ptlogin2.qq.com, '*.msftconnecttest.com', '*.msftncsi.com', '*.xiami.com', '*.music.migu.cn', music.migu.cn, +.wotgame.cn, +.wggames.cn, +.wowsgame.cn, +.wargaming.net, '*.*.*.srv.nintendo.net', '*.*.stun.playstation.net', 'xbox.*.*.microsoft.com', '*.*.xboxlive.com', '*.ipv6.microsoft.com', 'teredo.*.*.*', 'teredo.*.*', speedtest.cros.wr.pvp.net, +.jjvip8.com, www.douyu.com, activityapi.huya.com, activityapi.huya.com.w.cdngslb.com, www.bilibili.com, api.bilibili.com, a.w.bilicdn1.com]
+
+
+########### 策略组 ##########
+############################
+proxy-groups:
+  - { name: 🎃 节点选择, <<: *use }
+  - { name: 🚀 守候高级, <<: *use2 }
+  - { name: 🚀 守候网络, <<: *use3, type: url-test  }
+  - { name: 🏂 iKuuu, <<: *use4, type: url-test  }
+  - { name: 📲 电报消息, type: select, proxies: [ 🇭🇰 香港节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🎯 全球直连, ], }
+  - { name: 🎬 Emby, <<: *use1, filter: "(?i)emby|🎬｜Emby" }
+  - { name: 📺 哔哩哔哩, type: select, proxies: [ 🎯 全球直连, 🇭🇰 香港节点, 🇨🇳 台湾节点, ], }
+  - { name: 🎯 全球直连, type: select, proxies: [ DIRECT, 🎃 节点选择, ], }
+  - { name: 🍃 应用净化, type: select, proxies: [ DIRECT, 🎃 节点选择, REJECT, ], }
+  - { name: 🇭🇰 香港节点, <<: *use1, filter: "(?i)港|hk|hongkong|hong kong" }
+  - { name: 🇨🇳 台湾节点, <<: *use1, filter: "(?i)台|tw|taiwan" }
+  - { name: 🇯🇵 日本节点, <<: *use1, filter: "(?i)日本|jp|japan" }
+  - { name: 🇸🇬 狮城节点, <<: *use1, filter: "(?i)(新|sg|singapore)" }
+  - { name: 🇺🇲 美国节点, <<: *use1, filter: "(?i)美|us|unitedstates|united states", type: url-test }
+  - { name: 🐟 漏网之鱼, <<: *pr }
+  - { name: 🛑 广告拦截, type: select, proxies: [REJECT, DIRECT, 🎃 节点选择] }
+
+########### 规则集合 ##########
+############################
+rule-providers:
+  anti-AD:
+    type: http
+    behavior: domain
+    format: yaml
+    path: ./rule_provider/anti-AD.yaml
+    url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml?"
+    interval: 600
+  anti-AD-white:
+    type: http
+    behavior: domain
+    format: yaml
+    path: ./rule_provider/anti-AD-white.yaml
+    url: "https://raw.githubusercontent.com/privacy-protection-tools/dead-horse/master/anti-ad-white-for-clash.yaml?"
+    interval: 600
+  anti:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/anti.txt"
+    path: ./rule_provider/anti.yaml
+    interval: 600
+  DIRECTL:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/DIRECT.txt"
+    path: ./rule_provider/DIRECT.yaml
+    interval: 600
+  Clean:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/Clean.txt"
+    path: ./rule_provider/Clean.yaml
+    interval: 600
+  PROXY:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/PROXY.txt"
+    path: ./rule_provider/PROXY.yaml
+    interval: 600
+  Telegram:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/Telegram.txt"
+    path: ./rule_provider/Telegram.yaml
+    interval: 600
+  Emby:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/Emby.txt"
+    path: ./rule_provider/Emby.yaml
+    interval: 600
+  USA:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Jackie-G0308/Myclash/main/USA.txt"
+    path: ./rule_provider/USA.yaml
+    interval: 600
+
+
+########### 规则 ############
+############################
+rules:
+  - RULE-SET,PROXY,🎃 节点选择
+  - RULE-SET,DIRECTL,🎯 全球直连
+  - RULE-SET,Telegram,📲 电报消息
+  - RULE-SET,Emby,🎬 Emby
+  - RULE-SET,Clean,🍃 应用净化
+  - RULE-SET,USA,🇺🇲 美国节点
+  - RULE-SET,anti,🛑 广告拦截 
+  - AND,((RULE-SET,anti-AD),(NOT,((RULE-SET,anti-AD-white)))),🛑 广告拦截 # 感谢 📲 电报消息 @nextyahooquery 提供的建议
+  - GEOSITE,geolocation-!cn,🐟 漏网之鱼
+  - MATCH,🐟 漏网之鱼
