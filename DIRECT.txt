@@ -450,6 +450,7 @@ payload:
   - DOMAIN-SUFFIX,geilicdn.com
   - DOMAIN-SUFFIX,ghpym.com
   - DOMAIN-SUFFIX,godic.net
+  - DOMAIN-SUFFIX,gongkh.cn
   - DOMAIN-SUFFIX,guazi.com
   - DOMAIN-SUFFIX,gwdang.com
   - DOMAIN-SUFFIX,gzlzfm.com
